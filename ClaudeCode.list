@@ -15,6 +15,10 @@ DOMAIN-SUFFIX,claudemcpclient.com
 DOMAIN-SUFFIX,claudemcpcontent.com
 DOMAIN-SUFFIX,claudeusercontent.com
 
+# ---------- 1b. MCP 生态 ----------
+# Claude Code / Claude Desktop 的 MCP（Model Context Protocol）官方站点与文档
+DOMAIN-SUFFIX,modelcontextprotocol.io
+
 # ---------- 2. CDN 与静态资源 ----------
 DOMAIN,servd-anthropic-website.b-cdn.net
 DOMAIN,anthropic.com.cdn.cloudflare.net
@@ -31,6 +35,8 @@ DOMAIN-SUFFIX,frompersona.com
 # ---------- 5. 监控 / 遥测 / 反欺诈 ----------
 DOMAIN-SUFFIX,sentry.io
 DOMAIN-SUFFIX,statsigapi.net
+# GrowthBook 特性开关 CDN（Claude 网页端的 A/B 与灰度开关）
+DOMAIN,cdn.growthbook.io
 DOMAIN,browser-intake-us5-datadoghq.com
 DOMAIN-KEYWORD,datadog
 DOMAIN-KEYWORD,sentry
@@ -49,3 +55,9 @@ IP-ASN,399358,no-resolve
 # ---------- 8. NTP 时区同步 ----------
 # 若你的 Surge 版本不接受规则集内的逻辑规则，删掉这行，改为写进主配置 [Rule]
 AND,((PROTOCOL,UDP),(DEST-PORT,123))
+
+# ---------- 9. 可选（默认关闭）----------
+# Google Cloud Storage：Claude 的部分下载/上传会走 GCS。精确匹配只覆盖 storage.googleapis.com
+# 本身，不含 bucket.storage.googleapis.com 这类子域，副作用有限；但它是 Google 共享基础设施，
+# 与 Anthropic 无关，因此默认注释掉。需要时去掉行首的 # 即可。
+# DOMAIN,storage.googleapis.com
