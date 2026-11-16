@@ -1,0 +1,51 @@
+# Claude Code 分流规则集（Surge RULE-SET 格式，不含策略名）
+# 来源：https://ip.net.coffee/claude/site.html
+#
+# 用法（在 [Rule] 中引用，策略名自行填写）：
+#   RULE-SET,ClaudeCode.list,Proxy
+#   RULE-SET,https://你的地址/ClaudeCode.list,Proxy
+# 若规则集与配置文件在同一个 Profiles 目录，可直接写相对路径 ClaudeCode.list
+
+# ---------- 1. 核心域名 ----------
+DOMAIN-SUFFIX,anthropic.com
+DOMAIN-SUFFIX,claude.ai
+DOMAIN-SUFFIX,claude.com
+DOMAIN-SUFFIX,clau.de
+DOMAIN-SUFFIX,claudemcpclient.com
+DOMAIN-SUFFIX,claudemcpcontent.com
+DOMAIN-SUFFIX,claudeusercontent.com
+
+# ---------- 2. CDN 与静态资源 ----------
+DOMAIN,servd-anthropic-website.b-cdn.net
+DOMAIN,anthropic.com.cdn.cloudflare.net
+
+# ---------- 3. 认证 / 内容 ----------
+DOMAIN,anthropic.auth0.com
+DOMAIN,anthropic-com.ghost.io
+
+# ---------- 4. KYC ----------
+DOMAIN,maps.googleapis.com
+DOMAIN-SUFFIX,withpersona.com
+DOMAIN-SUFFIX,frompersona.com
+
+# ---------- 5. 监控 / 遥测 / 反欺诈 ----------
+DOMAIN-SUFFIX,sentry.io
+DOMAIN-SUFFIX,statsigapi.net
+DOMAIN,browser-intake-us5-datadoghq.com
+DOMAIN-KEYWORD,datadog
+DOMAIN-KEYWORD,sentry
+DOMAIN-KEYWORD,sift
+
+# ---------- 6. 第三方 widget ----------
+DOMAIN-SUFFIX,intercom.io
+DOMAIN-SUFFIX,intercomcdn.com
+DOMAIN,cdn.usefathom.com
+
+# ---------- 7. IP 段 / ASN 兜底 ----------
+IP-CIDR,160.79.104.0/21,no-resolve
+IP-CIDR6,2607:6bc0::/32,no-resolve
+IP-ASN,399358,no-resolve
+
+# ---------- 8. NTP 时区同步 ----------
+# 若你的 Surge 版本不接受规则集内的逻辑规则，删掉这行，改为写进主配置 [Rule]
+AND,((PROTOCOL,UDP),(DEST-PORT,123))
