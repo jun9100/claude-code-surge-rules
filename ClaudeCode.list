@@ -18,6 +18,8 @@ DOMAIN-SUFFIX,claudeusercontent.com
 # ---------- 1b. MCP 生态 ----------
 # Claude Code / Claude Desktop 的 MCP（Model Context Protocol）官方站点与文档
 DOMAIN-SUFFIX,modelcontextprotocol.io
+DOMAIN-SUFFIX,modelcontextprotocol.org
+DOMAIN-SUFFIX,modelcontextprotocol.net
 
 # ---------- 2. CDN 与静态资源 ----------
 DOMAIN,servd-anthropic-website.b-cdn.net
@@ -56,7 +58,26 @@ IP-ASN,399358,no-resolve
 # 若你的 Surge 版本不接受规则集内的逻辑规则，删掉这行，改为写进主配置 [Rule]
 AND,((PROTOCOL,UDP),(DEST-PORT,123))
 
-# ---------- 9. 可选（默认关闭）----------
+# ---------- 9. Anthropic 自有的边缘域名 ----------
+# 以下域名逐个用 DoH 查过 A 记录，全部解析到 160.79.104.0/21（Anthropic 自有段），
+# 属于官方注册但少见的入口/实验域名。它们已被 IP 规则覆盖，但域名未解析时 IP 规则会因
+# no-resolve 被跳过，所以逐个列出可避免漏配。
+DOMAIN-SUFFIX,claude.app
+DOMAIN-SUFFIX,claude.new
+DOMAIN-SUFFIX,claude.site
+DOMAIN-SUFFIX,claude.dev
+DOMAIN-SUFFIX,claudepages.dev
+DOMAIN-SUFFIX,claudestudio.com
+DOMAIN-SUFFIX,claudeacademy.com
+DOMAIN-SUFFIX,antspace.dev
+DOMAIN-SUFFIX,muthos.com
+DOMAIN-SUFFIX,sillylittleguy.org
+DOMAIN-SUFFIX,lcicollections.org
+DOMAIN-SUFFIX,lcicat.org
+DOMAIN-SUFFIX,interface.feedback
+DOMAIN-SUFFIX,mcpservertest.online
+
+# ---------- 10. 可选（默认关闭）----------
 # Google Cloud Storage：Claude 的部分下载/上传会走 GCS。精确匹配只覆盖 storage.googleapis.com
 # 本身，不含 bucket.storage.googleapis.com 这类子域，副作用有限；但它是 Google 共享基础设施，
 # 与 Anthropic 无关，因此默认注释掉。需要时去掉行首的 # 即可。

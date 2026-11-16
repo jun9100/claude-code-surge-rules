@@ -104,30 +104,37 @@ surge-cli rule explain claude.ai
 
 本仓库的 `ClaudeCode.list` 已通过 `surge-cli --check`（放进配置引用后返回 `OK`），并由 CI 检查语法与重复项。
 
-## 与其它规则集的对比
+## 同类规则集横评
 
-常被拿来比较的是 [xiaolai/anthropic-claude-surge-rules-set](https://github.com/xiaolai/anthropic-claude-surge-rules-set)。机器逐条对比结果（本仓库 29 条 vs 对方 13 条，对方最后一次 push：2026-04-14）：
+GitHub 上针对 Claude / Anthropic 的规则集不多，能查到的都逐个下载做过实测对比（2026-11-16）：
 
-**对方有、本仓库没有的（已评估后处理）**
+| 规则集 | 星标 | 最后更新 | 有效规则 | 说明 |
+| --- | --- | --- | --- | --- |
+| **本仓库** | — | 2026-11-16 | **45** | 覆盖最全，含 KYC / NTP / IP-ASN |
+| [VPSDance/ai-proxy-rules](https://github.com/VPSDance/ai-proxy-rules) | 717 | 2026-11-16 | 52 | 覆盖最广，含大量 Anthropic 边缘域名与 `PROCESS-NAME`；但缺 KYC、NTP，且含 6 条无 A 记录的无效条目 |
+| [HotKids/Rules](https://github.com/HotKids/Rules) | 479 | 2026-11-15 | 21 | 与 Net.Coffee 文档的类型前缀列表**逐条一致**，未补充 KYC / NTP |
+| [xiaolai/anthropic-claude-surge-rules-set](https://github.com/xiaolai/anthropic-claude-surge-rules-set) | 64 | 2026-04-14 | 13 | 多格式（Clash/sing-box/QX/Loon），但漏了 `anthropic.auth0.com` 等关键项 |
+| [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script) · `Claude` / `Anthropic` | 28.6k | 2026-10-27 | 3 / 3 | 极简，只有主域名 + 一个 CDN，适合「只代理主站」的克制用法 |
 
-| 条目 | 处理 | 原因 |
-| --- | --- | --- |
-| `DOMAIN-SUFFIX,modelcontextprotocol.io` | ✅ 已加入 | MCP 官方站点与文档，覆盖 Claude Code 的 MCP 使用场景 |
-| `DOMAIN,cdn.growthbook.io` | ✅ 已加入 | GrowthBook 特性开关 CDN，Claude 网页端用它做灰度 |
-| `DOMAIN,storage.googleapis.com` | ⚠️ 以注释形式提供 | Google 共享基础设施，与 Anthropic 无关，按需自行开启 |
-| `DOMAIN,downloads.claude.ai` | ❌ 不需要 | 已被 `DOMAIN-SUFFIX,claude.ai` 覆盖 |
-| `IP-CIDR,160.79.104.0/23` | ❌ 不需要 | 是 `160.79.104.0/21` 的子集 |
-| `IP-CIDR6,2607:6bc0::/48` | ❌ 不需要 | 本仓库用 `/32`，覆盖整个分配段，比 `/48` 更全 |
+### 与 VPSDance 那份的差异（值得吸收的部分）
 
-**本仓库有、对方没有的（20 条）**，其中影响使用的关键项：
+它列了一批看起来可疑、但我逐个用 DoH 查过 A 记录的域名，**确实解析到 `160.79.104.0/21`（Anthropic 自有段）**：
 
-- `anthropic.auth0.com` —— OAuth 登录，漏了会登录失败或地域不一致
-- `claudemcpclient.com` / `claudemcpcontent.com` —— MCP 客户端通信与服务端内容分发
-- `withpersona.com` / `frompersona.com` / `maps.googleapis.com` —— KYC 身份核验全流程
-- `sentry.io`、`statsigapi.net`、`browser-intake-us5-datadoghq.com`、`datadog` / `sentry` / `sift` 关键词 —— 上报出口与 API 出口不一致会触发异常检测
-- `servd-anthropic-website.b-cdn.net`、`anthropic.com.cdn.cloudflare.net` —— 静态资源 CDN
-- `IP-ASN,399358` —— ASN 级兜底，比 IP 段更全面
-- `AND,((PROTOCOL,UDP),(DEST-PORT,123))` —— NTP 时区同步
+```
+claude.app  claude.new  claude.site  claude.dev  claudepages.dev  claudestudio.com
+claudeacademy.com  antspace.dev  muthos.com  sillylittleguy.org  lcicollections.org
+lcicat.org  interface.feedback  mcpservertest.online
+```
+
+这些已全部并入本仓库（第 9 节）。为什么要按域名写、而不是靠 IP 段兜底？因为 `IP-CIDR` 带 `no-resolve`，域名尚未解析时该规则会被跳过，纯靠 IP 兜底会漏。
+
+**它列了但没有生效记录、因此本仓库未收录的**（A 记录为空，加进去只是噪音）：`chatbotclaude.com`、`anthropic.com.cn`、`anthropic.team`、`ant.dev`、`modelcontextprotocol.com`。
+
+**它比本仓库多、但本仓库按需提供的**：`DOMAIN,storage.googleapis.com` —— Google 共享基础设施，默认注释。
+
+### 结论
+
+没有找到比本仓库更完整的 Claude 分流规则集。VPSDance 那份在「边缘域名」上最全，但缺 KYC 身份核验、NTP 时区同步和 `sentry`/`sift` 关键词兜底；HotKids 那份等同文档原样；blackmatrix7 走极简路线。需要更严格的风控一致性，用本仓库；只关心能不能连上，三者都够用。
 
 ## License
 
